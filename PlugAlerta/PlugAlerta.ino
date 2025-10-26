@@ -361,7 +361,15 @@ void sendHeartbeat() {
   );
   
   client.publish(topic_heartbeat, msg, true);  // true = retained message
-  Serial.println("💓 Heartbeat enviado (retained)");
+  
+  // Mostrar status no serial
+  Serial.print("💓 Heartbeat: AC=");
+  Serial.print(acPowerPresent ? "ATIVA" : "DESATIVADA");
+  Serial.print(" | Bateria=");
+  Serial.print(batteryLow ? "BAIXA" : "OK");
+  Serial.print(" | Uptime=");
+  Serial.print(millis() / 1000);
+  Serial.println("s");
 }
 
 void sendStatus() {
@@ -384,6 +392,12 @@ void sendStatus() {
     millis() / 1000
   );
   client.publish(topic_heartbeat, msg, true);  // true = retained
+  
+  // Mostrar status no serial quando mudar estado
+  Serial.print("📊 Status: AC=");
+  Serial.print(acPowerPresent ? "ATIVA" : "DESATIVADA");
+  Serial.print(" | MQTT=");
+  Serial.println(mqttConnected ? "Conectado" : "Desconectado");
 }
 
 // ==================== SISTEMA DE LEDs ====================
@@ -551,7 +565,13 @@ void connectMQTT() {
         millis() / 1000
       );
       client.publish(topic_heartbeat, msg, true);  // true = retained
-      Serial.println("📤 Heartbeat inicial enviado (retained)");
+      
+      // Mostrar heartbeat inicial no serial
+      Serial.print("📤 Heartbeat inicial: AC=");
+      Serial.print(acPowerPresent ? "ATIVA" : "DESATIVADA");
+      Serial.print(" | Bateria=");
+      Serial.print(batteryLow ? "BAIXA" : "OK");
+      Serial.println(" (retained)");
       
       // Subscrever tópicos se necessário
       // client.subscribe("plugalerta/command");
