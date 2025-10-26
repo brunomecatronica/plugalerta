@@ -126,7 +126,7 @@ class _MainScreenState extends State<MainScreen> {
       priority: Priority.high,
       enableVibration: true,
       playSound: true,
-      icon: '@mipmap/ic_launcher',
+      icon: 'ic_notification',
       color: const Color(0xFF4CAF50),
     );
     const iOS = DarwinNotificationDetails();
