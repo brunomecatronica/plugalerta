@@ -356,6 +356,10 @@ class _MainScreenState extends State<MainScreen> {
           'assets/logo.svg',
           height: 252,
           fit: BoxFit.contain,
+          colorFilter: const ColorFilter.mode(
+            Color(0xFF667eea),
+            BlendMode.srcIn,
+          ),
         ),
       ),
     );
