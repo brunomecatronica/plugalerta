@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 void main() {
   runApp(const PlugAlertaApp());
@@ -367,44 +368,36 @@ class _MainScreenState extends State<MainScreen> {
       ),
       child: Column(
         children: [
-          // Texto "Plug" com gradiente
-          ShaderMask(
-            shaderCallback: (bounds) => const LinearGradient(
-              colors: [Color(0xFFFFD700), Color(0xFFFFA500)],
-            ).createShader(bounds),
-            child: const Text(
-              'Plug',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 36,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 1.2,
+          // Logo SVG
+          Container(
+            height: 80,
+            width: 80,
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.2),
+              shape: BoxShape.circle,
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: SvgPicture.asset(
+                'assets/logo.svg',
+                colorFilter: const ColorFilter.mode(
+                  Color(0xFFFFD700),
+                  BlendMode.srcIn,
+                ),
               ),
             ),
           ),
-          const SizedBox(height: 4),
-          // Texto "ALERTA" com ícone
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(
-                Icons.warning_amber_rounded,
-                color: Color(0xFFFFD700),
-                size: 28,
-              ),
-              const SizedBox(width: 8),
-              const Text(
-                'ALERTA',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 32,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 3.0,
-                ),
-              ),
-            ],
+          const SizedBox(height: 16),
+          const Text(
+            'Plug Alerta',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 28,
+              fontWeight: FontWeight.bold,
+              letterSpacing: 1.2,
+            ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 4),
           Text(
             'Monitoramento de Energia',
             style: TextStyle(
