@@ -61,6 +61,29 @@ class _MainScreenState extends State<MainScreen> {
     const initSettings = InitializationSettings(android: android, iOS: iOS);
 
     await notifications.initialize(initSettings);
+    
+    // Solicitar permissão de notificações
+    print('📱 Solicitando permissão de notificações...');
+    try {
+      await _requestNotificationPermission();
+    } catch (e) {
+      print('❌ Erro ao solicitar permissão: $e');
+    }
+  }
+
+  Future<void> _requestNotificationPermission() async {
+    // No Android 13+ precisa solicitar permissão explicitamente
+    final androidInfo = await notifications.resolvePlatformSpecificImplementation<
+        AndroidFlutterLocalNotificationsPlugin>();
+    
+    if (androidInfo != null) {
+      final granted = await androidInfo.requestNotificationsPermission();
+      if (granted ?? false) {
+        print('✅ Permissão de notificações concedida');
+      } else {
+        print('❌ Permissão de notificações negada');
+      }
+    }
   }
 
   Future<void> _showNotification(String title, String body) async {
