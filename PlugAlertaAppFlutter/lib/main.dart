@@ -126,9 +126,9 @@ class _MainScreenState extends State<MainScreen> {
       priority: Priority.high,
       enableVibration: true,
       playSound: true,
-      icon: 'notification_icon',
+      icon: 'ic_launcher',
       color: Color(0xFF4CAF50),
-      largeIcon: const DrawableResourceAndroidBitmap('notification_icon'),
+      largeIcon: const DrawableResourceAndroidBitmap('ic_launcher'),
     );
     const iOS = DarwinNotificationDetails();
     const details = NotificationDetails(android: android, iOS: iOS);
