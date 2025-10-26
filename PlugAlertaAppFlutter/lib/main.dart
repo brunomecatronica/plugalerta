@@ -357,7 +357,7 @@ class _MainScreenState extends State<MainScreen> {
           height: 252,
           fit: BoxFit.contain,
           colorFilter: const ColorFilter.mode(
-            Color(0xFF667eea),
+            Colors.green,
             BlendMode.srcIn,
           ),
         ),
