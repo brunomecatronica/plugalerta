@@ -130,13 +130,15 @@ class _MainScreenState extends State<MainScreen> {
       enableVibration: true,
       playSound: true,
       color: const Color(0xFF4CAF50),
+      // Usar ícone customizado para notificações
+      icon: 'ic_notification',
     );
     const iOS = DarwinNotificationDetails();
     final details = NotificationDetails(android: android, iOS: iOS);
 
     // Usar ID fixo para substituir a notificação anterior
     await notifications.show(NOTIFICATION_ALERT_ID, title, body, details);
-    print('✅ Notificação enviada (substitui a anterior)');
+    print('✅ Notificação enviada com ícone customizado (substitui a anterior)');
   }
 
   Future<void> _connectMQTT() async {
