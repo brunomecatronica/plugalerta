@@ -3,6 +3,7 @@ import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'splash_screen.dart';
 
 void main() {
   runApp(const PlugAlertaApp());
@@ -22,8 +23,35 @@ class PlugAlertaApp extends StatelessWidget {
         ),
         useMaterial3: true,
       ),
-      home: const MainScreen(),
+      home: const _InitialScreen(),
     );
+  }
+}
+
+class _InitialScreen extends StatefulWidget {
+  const _InitialScreen();
+
+  @override
+  State<_InitialScreen> createState() => _InitialScreenState();
+}
+
+class _InitialScreenState extends State<_InitialScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // Mostrar splash screen por 2 segundos
+    Future.delayed(const Duration(seconds: 2), () {
+      if (mounted) {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (_) => const MainScreen()),
+        );
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return const SplashScreen();
   }
 }
 
