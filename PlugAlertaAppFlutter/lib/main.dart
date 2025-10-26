@@ -118,7 +118,7 @@ class _MainScreenState extends State<MainScreen> {
   Future<void> _showNotification(String title, String body) async {
     print('🔔 Chamando _showNotification - Título: $title, Corpo: $body');
     
-    const android = AndroidNotificationDetails(
+    final AndroidNotificationDetails android = AndroidNotificationDetails(
       'plugalerta_channel',
       'Plug Alerta Alertas',
       channelDescription: 'Alertas de mudança de estado da tensão',
@@ -126,12 +126,11 @@ class _MainScreenState extends State<MainScreen> {
       priority: Priority.high,
       enableVibration: true,
       playSound: true,
-      icon: 'ic_launcher',
-      color: Color(0xFF4CAF50),
-      largeIcon: const DrawableResourceAndroidBitmap('ic_launcher'),
+      icon: '@mipmap/ic_launcher',
+      color: const Color(0xFF4CAF50),
     );
     const iOS = DarwinNotificationDetails();
-    const details = NotificationDetails(android: android, iOS: iOS);
+    final NotificationDetails details = NotificationDetails(android: android, iOS: iOS);
 
     await notifications.show(1, title, body, details);
     print('🔔 Notificação enviada');
