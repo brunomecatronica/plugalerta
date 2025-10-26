@@ -370,20 +370,17 @@ class _MainScreenState extends State<MainScreen> {
         children: [
           // Logo SVG
           Container(
-            height: 80,
-            width: 80,
+            height: 100,
+            width: 100,
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.2),
-              shape: BoxShape.circle,
+              color: Colors.white.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(12),
             ),
             child: Padding(
               padding: const EdgeInsets.all(16),
               child: SvgPicture.asset(
                 'assets/logo.svg',
-                colorFilter: const ColorFilter.mode(
-                  Color(0xFFFFD700),
-                  BlendMode.srcIn,
-                ),
+                fit: BoxFit.contain,
               ),
             ),
           ),
