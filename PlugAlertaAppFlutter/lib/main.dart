@@ -366,12 +366,12 @@ class _MainScreenState extends State<MainScreen> {
                     Icons.battery_charging_full,
                   ),
                   const SizedBox(height: 16),
-                  _buildStatusCard(
-                    'Conexão MQTT',
-                    mqttStatus,
-                    mqttColor,
-                    Icons.cloud_queue,
-                  ),
+                   _buildStatusCard(
+                     'Conexão Servidor',
+                     mqttStatus,
+                     mqttColor,
+                     Icons.cloud_queue,
+                   ),
                   const SizedBox(height: 30),
                   _buildLastUpdate(),
                 ],
