@@ -69,7 +69,7 @@
 #define PIN_BUTTON_TEST 25        // Botão Teste: Um terminal → GPIO25, outro → GND (opcional)
 
 // Configurações MQTT
-const char* mqtt_server = "broker.hivemq.com";
+const char* mqtt_server = "test.mosquitto.org";
 const int mqtt_port = 1883;
 
 // Tópicos MQTT
@@ -360,8 +360,8 @@ void sendHeartbeat() {
     millis() / 1000
   );
   
-  client.publish(topic_heartbeat, msg);
-  Serial.println("💓 Heartbeat enviado");
+  client.publish(topic_heartbeat, msg, true);  // true = retained message
+  Serial.println("💓 Heartbeat enviado (retained)");
 }
 
 void sendStatus() {
@@ -375,6 +375,15 @@ void sendStatus() {
   );
   
   client.publish(topic_status, msg);
+  
+  // Também enviar heartbeat para apps receberem status atualizado
+  snprintf(msg, MSG_BUFFER_SIZE, 
+    "{\"status\":\"online\",\"ac_power\":%s,\"battery_low\":%s,\"uptime\":%ld}",
+    acPowerPresent ? "true" : "false",
+    batteryLow ? "true" : "false",
+    millis() / 1000
+  );
+  client.publish(topic_heartbeat, msg, true);  // true = retained
 }
 
 // ==================== SISTEMA DE LEDs ====================
@@ -484,7 +493,7 @@ void startConfigPortal() {
   customStyle += "input:focus{border-color:#667eea;outline:none;}";
   customStyle += ".title{border-bottom:3px solid #fff;padding-bottom:10px;margin-bottom:20px;}";
   customStyle += "</style>";
-  wifiManager.setCustomHeadElement(customStyle);
+  wifiManager.setCustomHeadElement(customStyle.c_str());
   
   Serial.println("📡 Criando rede WiFi: PlugAlerta_Config");
   Serial.println("🔑 Senha: 12345678");
@@ -533,6 +542,16 @@ void connectMQTT() {
     if (client.connect(clientId.c_str())) {
       Serial.println("✅ MQTT conectado!");
       mqttConnected = true;
+      
+      // Enviar heartbeat imediato (retained) para atualizar apps conectados
+      snprintf(msg, MSG_BUFFER_SIZE, 
+        "{\"status\":\"online\",\"ac_power\":%s,\"battery_low\":%s,\"uptime\":%ld}",
+        acPowerPresent ? "true" : "false",
+        batteryLow ? "true" : "false",
+        millis() / 1000
+      );
+      client.publish(topic_heartbeat, msg, true);  // true = retained
+      Serial.println("📤 Heartbeat inicial enviado (retained)");
       
       // Subscrever tópicos se necessário
       // client.subscribe("plugalerta/command");
