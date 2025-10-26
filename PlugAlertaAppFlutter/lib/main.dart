@@ -350,11 +350,11 @@ class _MainScreenState extends State<MainScreen> {
 
   Widget _buildHeader() {
     return SizedBox(
-      height: 360,
+      height: 252,
       child: Center(
         child: SvgPicture.asset(
           'assets/logo.svg',
-          height: 360,
+          height: 252,
           fit: BoxFit.contain,
         ),
       ),
