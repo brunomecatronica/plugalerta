@@ -118,22 +118,59 @@ class _MainScreenState extends State<MainScreen> {
   Future<void> _showNotification(String title, String body) async {
     print('🔔 Chamando _showNotification - Título: $title, Corpo: $body');
     
-    final android = AndroidNotificationDetails(
-      'plugalerta_channel',
-      'Plug Alerta Alertas',
-      channelDescription: 'Alertas de mudança de estado da tensão',
-      importance: Importance.high,
-      priority: Priority.high,
-      enableVibration: true,
-      playSound: true,
-      icon: '@drawable/ic_notification',
-      color: const Color(0xFF4CAF50),
-    );
-    const iOS = DarwinNotificationDetails();
-    final details = NotificationDetails(android: android, iOS: iOS);
+    try {
+      final android = AndroidNotificationDetails(
+        'plugalerta_channel',
+        'Plug Alerta Alertas',
+        channelDescription: 'Alertas de mudança de estado da tensão',
+        importance: Importance.high,
+        priority: Priority.high,
+        enableVibration: true,
+        playSound: true,
+        color: const Color(0xFF4CAF50),
+        // Usar nome do recurso sem @drawable/
+        icon: 'ic_notification',
+      );
+      const iOS = DarwinNotificationDetails();
+      final details = NotificationDetails(android: android, iOS: iOS);
 
-    await notifications.show(1, title, body, details);
-    print('🔔 Notificação enviada');
+      await notifications.show(
+        DateTime.now().millisecondsSinceEpoch.remainder(100000),
+        title,
+        body,
+        details,
+      );
+      print('✅ Notificação enviada com sucesso!');
+    } catch (e, stackTrace) {
+      print('❌ ERRO ao enviar notificação: $e');
+      print('📋 Stack trace: $stackTrace');
+      
+      // Tentar novamente sem ícone customizado se falhar
+      try {
+        const androidFallback = AndroidNotificationDetails(
+          'plugalerta_channel',
+          'Plug Alerta Alertas',
+          channelDescription: 'Alertas de mudança de estado da tensão',
+          importance: Importance.high,
+          priority: Priority.high,
+          enableVibration: true,
+          playSound: true,
+          color: Color(0xFF4CAF50),
+        );
+        const iOS = DarwinNotificationDetails();
+        const detailsFallback = NotificationDetails(android: androidFallback, iOS: iOS);
+        
+        await notifications.show(
+          DateTime.now().millisecondsSinceEpoch.remainder(100000) + 1,
+          title,
+          body,
+          detailsFallback,
+        );
+        print('✅ Notificação enviada (fallback sem ícone customizado)');
+      } catch (e2) {
+        print('❌ Falha total ao enviar notificação: $e2');
+      }
+    }
   }
 
   Future<void> _connectMQTT() async {
