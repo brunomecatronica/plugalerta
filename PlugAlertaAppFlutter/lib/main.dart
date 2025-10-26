@@ -148,11 +148,18 @@ class _MainScreenState extends State<MainScreen> {
 
     try {
       await client.connect();
-      client.updates?.listen(_handleMessages);
-
+      
+      // Configurar listener UMA VEZ antes de inscrever
+      client.updates?.listen(_handleMessages, onError: (error) {
+        print('❌ Erro no stream MQTT: $error');
+      }, cancelOnError: false);
+      
+      print('👂 Listener MQTT configurado');
+      
+      // Inscrever nos tópicos DEPOIS de configurar listener
       client.subscribe('plugalerta/heartbeat', MqttQos.atLeastOnce);
       client.subscribe('plugalerta/alert', MqttQos.atLeastOnce);
-
+      
       print('✅ Inscrito nos tópicos MQTT (receberá última mensagem retained)');
 
     } catch (e) {
@@ -172,7 +179,12 @@ class _MainScreenState extends State<MainScreen> {
     print('🔄 Tentando reconectar ao MQTT...');
     try {
       await client.connect();
-      print('✅ Reconectado com sucesso!');
+      
+      // Re-inscrever nos tópicos após reconexão
+      client.subscribe('plugalerta/heartbeat', MqttQos.atLeastOnce);
+      client.subscribe('plugalerta/alert', MqttQos.atLeastOnce);
+      
+      print('✅ Reconectado e re-inscrito nos tópicos!');
     } catch (e) {
       print('❌ Falha ao reconectar: $e');
       Future.delayed(const Duration(seconds: 5), () {
@@ -182,12 +194,13 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   void _handleMessages(List<MqttReceivedMessage<MqttMessage?>>? messages) {
-    final recMess = messages![0].payload as MqttPublishMessage;
+    if (messages == null || messages.isEmpty) return;
+    
+    final recMess = messages[0].payload as MqttPublishMessage;
     final payload = MqttPublishPayload.bytesToStringAsString(recMess.payload.message);
     final topic = messages[0].topic;
 
-    print('📨 Tópico: $topic | Payload: $payload');
-
+    // Processar imediatamente sem delays
     if (topic == 'plugalerta/heartbeat') {
       _handleHeartbeat(payload);
     } else if (topic == 'plugalerta/alert') {
@@ -196,32 +209,75 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   void _handleHeartbeat(String payload) {
-    print('💓 Heartbeat: $payload');
+    // Processar dados ANTES do setState para atualização mais rápida
+    String newAcStatus = acStatus;
+    Color newAcColor = acColor;
+    String newBatteryStatus = batteryStatus;
+    Color newBatteryColor = batteryColor;
 
+    // Detectar estado AC
+    if (payload.contains('"ac_power":true')) {
+      newAcStatus = 'PRESENTE';
+      newAcColor = Colors.green;
+    } else if (payload.contains('"ac_power":false')) {
+      newAcStatus = 'AUSENTE';
+      newAcColor = Colors.red;
+    }
+
+    // Detectar estado da bateria
+    if (payload.contains('"battery_low":false')) {
+      newBatteryStatus = 'OK';
+      newBatteryColor = Colors.green;
+    } else if (payload.contains('"battery_low":true')) {
+      newBatteryStatus = 'BAIXA';
+      newBatteryColor = Colors.red;
+    }
+
+    // Aplicar setState apenas uma vez
     setState(() {
-      if (payload.contains('"ac_power":true')) {
-        acStatus = 'PRESENTE';
-        acColor = Colors.green;
-      } else if (payload.contains('"ac_power":false')) {
-        acStatus = 'AUSENTE';
-        acColor = Colors.red;
-      }
-
-      if (payload.contains('"battery_low":false')) {
-        batteryStatus = 'OK';
-        batteryColor = Colors.green;
-      } else if (payload.contains('"battery_low":true')) {
-        batteryStatus = 'BAIXA';
-        batteryColor = Colors.red;
-      }
-
+      acStatus = newAcStatus;
+      acColor = newAcColor;
+      batteryStatus = newBatteryStatus;
+      batteryColor = newBatteryColor;
       lastUpdate = 'Atualizado: ${DateTime.now().toString().substring(11, 19)}';
     });
   }
 
   void _handleAlert(String payload) {
-    print('🚨 Alerta: $payload');
+    // Processar dados ANTES do setState
+    String newAcStatus = acStatus;
+    Color newAcColor = acColor;
+    String newBatteryStatus = batteryStatus;
+    Color newBatteryColor = batteryColor;
 
+    // Atualizar estado AC do alerta
+    if (payload.contains('"ac_power":true')) {
+      newAcStatus = 'PRESENTE';
+      newAcColor = Colors.green;
+    } else if (payload.contains('"ac_power":false')) {
+      newAcStatus = 'AUSENTE';
+      newAcColor = Colors.red;
+    }
+
+    // Atualizar estado da bateria do alerta
+    if (payload.contains('"battery_low":false')) {
+      newBatteryStatus = 'OK';
+      newBatteryColor = Colors.green;
+    } else if (payload.contains('"battery_low":true')) {
+      newBatteryStatus = 'BAIXA';
+      newBatteryColor = Colors.red;
+    }
+
+    // Aplicar setState uma única vez
+    setState(() {
+      acStatus = newAcStatus;
+      acColor = newAcColor;
+      batteryStatus = newBatteryStatus;
+      batteryColor = newBatteryColor;
+      lastUpdate = 'Atualizado: ${DateTime.now().toString().substring(11, 19)}';
+    });
+
+    // Enviar notificação após atualizar UI
     const notificationTitle = 'ALERTA TENSÃO';
     String notificationBody = 'Mudança de estado detectada';
 
