@@ -497,14 +497,14 @@ class _MainScreenState extends State<MainScreen> {
             size: 16,
           ),
           const SizedBox(width: 8),
-          Text(
-            lastUpdate,
-            style: TextStyle(
-              color: Colors.white.withOpacity(0.7),
-              fontSize: 12,
-              fontWeight: FontWeight.w400,
-            ),
-          ),
+           Text(
+             lastUpdate,
+             style: TextStyle(
+               color: Colors.white.withOpacity(0.7),
+               fontSize: 16,
+               fontWeight: FontWeight.w400,
+             ),
+           ),
         ],
       ),
     );
