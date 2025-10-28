@@ -1,0 +1,12 @@
+# Flutter - Arquivos gerados
+**/generated_plugin_registrant.*
+**/GeneratedPluginRegistrant.*
+**/generated_plugins.cmake
+
+# Arquivos de build
+build/
+*.lock
+.DS_Store
+
+# Pasta de build do Flutter
+PlugAlertaAppFlutter/build/
