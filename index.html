@@ -240,17 +240,6 @@
             transform: scale(1.05);
         }
 
-        .arch-component a {
-            text-decoration: none;
-            color: inherit;
-            display: block;
-        }
-
-        .arch-component:hover {
-            cursor: pointer;
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
-        }
-
         .arch-component i {
             font-size: 2.5rem;
             color: #667eea;
@@ -585,11 +574,11 @@
         <div class="container">
             <h2 class="section-title scroll-reveal">Arquitetura do Sistema</h2>
             <div class="arch-diagram">
-                <a href="https://github.com/brunomecatronica/plugalerta" target="_blank" class="arch-component scroll-reveal">
+                <div class="arch-component scroll-reveal">
                     <i class="fas fa-microchip"></i>
                     <h4>ESP32</h4>
                     <p>Tomada inteligente com sensores de tensão</p>
-                </a>
+                </div>
                 <div class="arrow scroll-reveal">
                     <i class="fas fa-arrow-right"></i>
                 </div>
@@ -750,7 +739,7 @@
                 </div>
             </div>
             <div class="social-links">
-                <a href="#"><i class="fab fa-github"></i></a>
+                <a href="https://github.com/brunomecatronica/plugalerta" target="_blank"><i class="fab fa-github"></i></a>
             </div>
             <p style="margin-top: 2rem; opacity: 0.7;">&copy; 2024 PlugAlerta. Todos os direitos reservados.</p>
         </div>
