@@ -75,11 +75,42 @@ class _MainScreenState extends State<MainScreen> {
   Color batteryColor = Colors.grey;
   Color mqttColor = Colors.grey;
 
+  DateTime? lastHeartbeatTime;
+  static const Duration HEARTBEAT_TIMEOUT = Duration(minutes: 2);
+
   @override
   void initState() {
     super.initState();
     _initializeNotifications();
     _connectMQTT();
+    _startHeartbeatChecker();
+  }
+
+  void _startHeartbeatChecker() {
+    // Verificar heartbeat a cada 30 segundos
+    Future.delayed(const Duration(seconds: 30), () {
+      if (!mounted) return;
+      _checkHeartbeatTimeout();
+      _startHeartbeatChecker(); // Recursivo para continuar verificando
+    });
+  }
+
+  void _checkHeartbeatTimeout() {
+    if (lastHeartbeatTime == null) {
+      // Nunca recebeu heartbeat, já deve estar desconectado
+      return;
+    }
+
+    final now = DateTime.now();
+    final timeSinceLastHeartbeat = now.difference(lastHeartbeatTime!);
+
+    if (timeSinceLastHeartbeat > HEARTBEAT_TIMEOUT && mqttStatus == 'Conectado') {
+      print('⚠️ Heartbeat timeout! Último heartbeat recebido há ${timeSinceLastHeartbeat.inMinutes} minutos');
+      setState(() {
+        mqttStatus = 'Desconectado';
+        mqttColor = Colors.red;
+      });
+    }
   }
 
   Future<void> _initializeNotifications() async {
@@ -245,6 +276,14 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   void _handleHeartbeat(String payload) {
+    // Registrar timestamp do último heartbeat
+    lastHeartbeatTime = DateTime.now();
+    
+    // Se estava desconectado, reconectar visualmente
+    if (mqttStatus != 'Conectado') {
+      print('✅ Heartbeat recebido - Reconectado!');
+    }
+
     // Processar dados ANTES do setState para atualização mais rápida
     String newAcStatus = acStatus;
     Color newAcColor = acColor;
@@ -276,10 +315,23 @@ class _MainScreenState extends State<MainScreen> {
       batteryStatus = newBatteryStatus;
       batteryColor = newBatteryColor;
       lastUpdate = 'Atualizado: ${DateTime.now().toString().substring(11, 19)}';
+      // Atualizar status MQTT para conectado se estava desconectado
+      if (mqttStatus != 'Conectado') {
+        mqttStatus = 'Conectado';
+        mqttColor = Colors.green;
+      }
     });
   }
 
   void _handleAlert(String payload) {
+    // Registrar timestamp do último heartbeat (alert também indica que o ESP32 está vivo)
+    lastHeartbeatTime = DateTime.now();
+    
+    // Se estava desconectado, reconectar visualmente
+    if (mqttStatus != 'Conectado') {
+      print('✅ Alerta recebido - Reconectado!');
+    }
+
     // Processar dados ANTES do setState
     String newAcStatus = acStatus;
     Color newAcColor = acColor;
@@ -311,6 +363,11 @@ class _MainScreenState extends State<MainScreen> {
       batteryStatus = newBatteryStatus;
       batteryColor = newBatteryColor;
       lastUpdate = 'Atualizado: ${DateTime.now().toString().substring(11, 19)}';
+      // Atualizar status MQTT para conectado se estava desconectado
+      if (mqttStatus != 'Conectado') {
+        mqttStatus = 'Conectado';
+        mqttColor = Colors.green;
+      }
     });
 
     // Enviar notificação após atualizar UI
