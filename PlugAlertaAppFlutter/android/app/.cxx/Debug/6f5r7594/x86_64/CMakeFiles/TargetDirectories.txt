@@ -1,0 +1,2 @@
+C:/Users/User/Desktop/PlugAlerta/PlugAlertaAppFlutter/android/app/.cxx/Debug/6f5r7594/x86_64/CMakeFiles/edit_cache.dir
+C:/Users/User/Desktop/PlugAlerta/PlugAlertaAppFlutter/android/app/.cxx/Debug/6f5r7594/x86_64/CMakeFiles/rebuild_cache.dir

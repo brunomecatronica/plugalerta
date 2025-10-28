@@ -1,0 +1,1 @@
+ C:\\Users\\User\\Desktop\\PlugAlerta\\PlugAlertaAppFlutter\\.dart_tool\\flutter_build\\a36e6faa805236a1599643d5c63801f0\\native_assets.json: 
